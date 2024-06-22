@@ -1,0 +1,43 @@
+import java_cup.runtime.Symbol;
+
+/* Define terminals */
+terminal IDENTIFICATION_DIVISION, DIVISION, PROGRAM_ID, DISPLAY, STOP_RUN, STRING;
+terminal ERROR;
+
+/* Define non-terminals */
+non terminal program;
+non terminal identification_division;
+non terminal program_id;
+non terminal statement;
+non terminal display_statement;
+non terminal statement_list;
+
+/* Error handling and debugging */
+parser code {
+    public void syntax_error(Symbol s) {
+        System.err.println("Syntax error at line " + s.left + ", column " + s.right + ": " + s.value);
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+        System.err.println("Unrecoverable syntax error at line " + s.left + ", column " + s.right + ": " + s.value);
+    }
+}
+
+/* Start specification */
+start with program;
+
+/* Grammar rules */
+program ::= identification_division program_id statement_list EOF;
+
+identification_division ::= IDENTIFICATION_DIVISION DIVISION;
+
+program_id ::= PROGRAM_ID STRING;
+
+statement_list ::= /* empty */
+                | statement_list statement
+                | statement;
+
+statement ::= display_statement
+            | STOP_RUN;
+
+display_statement ::= DISPLAY STRING;
